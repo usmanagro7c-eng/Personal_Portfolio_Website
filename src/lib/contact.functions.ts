@@ -5,8 +5,8 @@ import { contactSchema, type ContactInput } from './contact-schema';
 export const submitEnquiry = createServerFn({ method: 'POST' })
   .validator((input: ContactInput) => contactSchema.parse(input))
   .handler(async ({ data }) => {
-    const url = process.env['SUPABASE_URL'];
-    const key = process.env['SUPABASE_PUBLISHABLE_KEY'];
+    const url = process.env['SUPABASE_URL'] || process.env['STORAGE_URL'];
+    const key = process.env['SUPABASE_PUBLISHABLE_KEY'] || process.env['SUPABASE_ANON_KEY'] || process.env['STORAGE_ANON_KEY'];
     if (!url || !key) throw new Error('Contact service is temporarily unavailable. Please email me directly.');
     const client = createClient(url, key, {
       auth: { persistSession: false, autoRefreshToken: false },
