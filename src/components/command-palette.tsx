@@ -14,6 +14,7 @@ import {
   Moon,
   Sparkles,
   Sun,
+  Terminal,
   User,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -33,9 +34,10 @@ import { useTheme } from "@/lib/use-theme";
 interface CommandPaletteProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onOpenTerminal?: () => void;
 }
 
-export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
+export function CommandPalette({ open, onOpenChange, onOpenTerminal }: CommandPaletteProps) {
   const { theme, setTheme } = useTheme();
 
   useEffect(() => {
@@ -141,6 +143,17 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
         <CommandSeparator />
 
         <CommandGroup heading="Quick Actions">
+          {onOpenTerminal && (
+            <CommandItem
+              onSelect={() => {
+                onOpenChange(false);
+                onOpenTerminal();
+              }}
+            >
+              <Terminal className="mr-2 h-4 w-4 text-emerald-400" />
+              <span>Open Developer Terminal (CLI)</span>
+            </CommandItem>
+          )}
           <CommandItem
             onSelect={() =>
               runCommand(() =>

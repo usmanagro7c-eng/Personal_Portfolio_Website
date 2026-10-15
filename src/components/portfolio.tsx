@@ -45,6 +45,7 @@ import { ContactForm } from "@/components/contact-form";
 import { AnimatedCount } from "@/components/animated-count";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { CommandPalette } from "@/components/command-palette";
+import { TerminalModal } from "@/components/terminal-modal";
 import {
   Dialog,
   DialogContent,
@@ -194,6 +195,7 @@ export function Portfolio() {
   const [selectedTech, setSelectedTech] = useState("All Tech");
   const [selectedCaseStudy, setSelectedCaseStudy] = useState<Project | null>(null);
   const [videoOpen, setVideoOpen] = useState(false);
+  const [terminalOpen, setTerminalOpen] = useState(false);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -239,6 +241,27 @@ export function Portfolio() {
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [menuOpen]);
+
+  // Terminal shortcut: Backtick ` or Ctrl+`
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      // Do not trigger if typing in an input or textarea
+      const target = e.target as HTMLElement;
+      if (
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.isContentEditable
+      ) {
+        return;
+      }
+      if (e.key === "`" || (e.ctrlKey && e.key === "`")) {
+        e.preventDefault();
+        setTerminalOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
 
   // High-performance spotlight cursor tracking for cards
   useEffect(() => {
@@ -355,6 +378,18 @@ export function Portfolio() {
               <span className="hidden sm:inline">Search</span>
               <kbd className="command-kbd">⌘K</kbd>
             </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="command-trigger"
+              onClick={() => setTerminalOpen(true)}
+              aria-label="Open developer terminal"
+              title="Interactive CLI / Terminal (`)"
+            >
+              <Terminal className="h-3.5 w-3.5 text-emerald-500" />
+              <span className="hidden sm:inline">CLI</span>
+              <kbd className="command-kbd">~</kbd>
+            </Button>
             <Button asChild variant="ghost" className="resume-button">
               <a href="/Muhammad-Usman-Aziz-Resume.pdf" target="_blank" rel="noreferrer">
                 <Download />
@@ -391,6 +426,16 @@ export function Portfolio() {
               }}
             >
               <Search className="h-4 w-4 mr-2 text-primary" /> Quick Command (⌘K)
+            </button>
+            <button
+              type="button"
+              className="mobile-search-btn"
+              onClick={() => {
+                setMenuOpen(false);
+                setTerminalOpen(true);
+              }}
+            >
+              <Terminal className="h-4 w-4 mr-2 text-emerald-500" /> Developer Terminal (CLI)
             </button>
             {nav.map((item) => (
               <a key={item} href={`#${item.toLowerCase()}`} onClick={() => setMenuOpen(false)}>
@@ -1203,7 +1248,12 @@ export function Portfolio() {
         <ArrowUp />
       </Button>
 
-      <CommandPalette open={cmdOpen} onOpenChange={setCmdOpen} />
+      <CommandPalette
+        open={cmdOpen}
+        onOpenChange={setCmdOpen}
+        onOpenTerminal={() => setTerminalOpen(true)}
+      />
+      <TerminalModal open={terminalOpen} onOpenChange={setTerminalOpen} />
 
       {/* Flagship Engineering Case Study Dialog */}
       <Dialog
