@@ -9,12 +9,15 @@ import {
   BriefcaseBusiness,
   Check,
   CheckCircle2,
+  Clock,
   Code2,
   Copy,
   Database,
   Download,
   ExternalLink,
+  FileText,
   Github,
+  Globe,
   GraduationCap,
   Hand,
   Layers3,
@@ -23,6 +26,7 @@ import {
   MapPin,
   Menu,
   Phone,
+  PlayCircle,
   Search,
   Smartphone,
   Sparkles,
@@ -39,14 +43,23 @@ import { AnimatedCount } from "@/components/animated-count";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { CommandPalette } from "@/components/command-palette";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import {
   blogs,
   categories,
   education,
+  globalWorkSignals,
   popularTechTags,
   projects,
   skillGroups,
   socials,
   testimonials,
+  type Project,
 } from "@/lib/portfolio-data";
 import { useScrollReveal } from "@/lib/use-scroll-reveal";
 import orbit from "@/assets/intelligence-orbit.jpg";
@@ -134,6 +147,8 @@ export function Portfolio() {
   const [cmdOpen, setCmdOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTech, setSelectedTech] = useState("All Tech");
+  const [selectedCaseStudy, setSelectedCaseStudy] = useState<Project | null>(null);
+  const [videoOpen, setVideoOpen] = useState(false);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -344,6 +359,14 @@ export function Portfolio() {
                   Let&rsquo;s build together <ArrowRight />
                 </a>
               </Button>
+              <Button
+                variant="outline"
+                className="hero-cta hero-video-cta"
+                onClick={() => setVideoOpen(true)}
+              >
+                <PlayCircle className="h-4 w-4 text-primary" />
+                Watch 60s Tech Overview
+              </Button>
               <div className="hero-socials">
                 <a href={`mailto:${socials.email}`} aria-label="Email Usman" title="Email">
                   <Mail />
@@ -372,6 +395,20 @@ export function Portfolio() {
               <MapPin />
               Faisalabad, Pakistan <span className="divider">/</span> Open to remote &amp; global
               opportunities
+            </div>
+            <div className="global-signals" data-reveal style={revealDelay(380)}>
+              <div className="signal-pill" title={globalWorkSignals.timezoneOverlap}>
+                <Clock className="h-3.5 w-3.5 text-primary" />
+                <span>US (EST/PST) &amp; EU/GMT Overlap</span>
+              </div>
+              <div className="signal-pill" title={globalWorkSignals.contractStatus}>
+                <Globe className="h-3.5 w-3.5 text-success" />
+                <span>Remote · B2B / W-8BEN · Relocation</span>
+              </div>
+              <div className="signal-pill" title={globalWorkSignals.responseTime}>
+                <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
+                <span>&lt; 12h Async Turnaround</span>
+              </div>
             </div>
           </div>
           <div className="orb-caption">
@@ -534,6 +571,18 @@ export function Portfolio() {
                   <div className="project-title-row">
                     <h3>{project.title}</h3>
                     <div className="project-actions">
+                      {project.caseStudy && (
+                        <button
+                          type="button"
+                          onClick={() => setSelectedCaseStudy(project)}
+                          className="project-action-link case-study-action-btn"
+                          title="Read In-Depth Architecture Case Study"
+                          aria-label={`Read ${project.title} Case Study`}
+                        >
+                          <BookOpen className="h-3.5 w-3.5" />
+                          <span className="case-study-btn-text">Case Study</span>
+                        </button>
+                      )}
                       {project.repo && (
                         <a
                           href={project.repo}
@@ -946,6 +995,188 @@ export function Portfolio() {
       </Button>
 
       <CommandPalette open={cmdOpen} onOpenChange={setCmdOpen} />
+
+      {/* Flagship Engineering Case Study Dialog */}
+      <Dialog
+        open={Boolean(selectedCaseStudy)}
+        onOpenChange={(open) => !open && setSelectedCaseStudy(null)}
+      >
+        <DialogContent className="case-study-dialog max-w-2xl max-h-[85vh] overflow-y-auto">
+          {selectedCaseStudy?.caseStudy && (
+            <div className="space-y-6">
+              <DialogHeader className="text-left space-y-2">
+                <div className="flex items-center gap-2">
+                  <span className="case-study-badge">{selectedCaseStudy.category}</span>
+                  <span className="text-xs font-mono text-primary uppercase tracking-wider">
+                    Engineering Case Study
+                  </span>
+                </div>
+                <DialogTitle className="text-2xl font-bold tracking-tight text-foreground">
+                  {selectedCaseStudy.title}
+                </DialogTitle>
+                <DialogDescription className="text-sm text-muted-foreground">
+                  {selectedCaseStudy.subtitle}
+                </DialogDescription>
+              </DialogHeader>
+
+              {/* Metrics highlight grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 py-2">
+                {selectedCaseStudy.caseStudy.metrics.map((m) => (
+                  <div key={m.label} className="case-metric-box">
+                    <span className="case-metric-value">{m.value}</span>
+                    <span className="case-metric-label">{m.label}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Structured deep dive sections */}
+              <div className="space-y-4 text-sm leading-relaxed">
+                <div className="case-section-card">
+                  <h4 className="case-section-title">
+                    <span className="case-num">01</span> The Engineering Challenge
+                  </h4>
+                  <p className="text-muted-foreground">{selectedCaseStudy.caseStudy.challenge}</p>
+                </div>
+
+                <div className="case-section-card">
+                  <h4 className="case-section-title">
+                    <span className="case-num">02</span> Architecture &amp; Technical Decisions
+                  </h4>
+                  <p className="text-muted-foreground">{selectedCaseStudy.caseStudy.architecture}</p>
+                </div>
+
+                <div className="case-section-card">
+                  <h4 className="case-section-title">
+                    <span className="case-num">03</span> Technical Obstacles Solved
+                  </h4>
+                  <p className="text-muted-foreground">{selectedCaseStudy.caseStudy.obstacles}</p>
+                </div>
+
+                <div className="case-section-card">
+                  <h4 className="case-section-title">
+                    <span className="case-num">04</span> Quantifiable Business &amp; Technical Outcome
+                  </h4>
+                  <p className="text-muted-foreground">{selectedCaseStudy.caseStudy.outcome}</p>
+                </div>
+              </div>
+
+              {/* Tech Stack Pills */}
+              <div className="pt-2 border-t border-border">
+                <span className="text-xs font-mono text-muted-foreground block mb-2">
+                  PRODUCTION STACK
+                </span>
+                <div className="flex flex-wrap gap-1.5">
+                  {selectedCaseStudy.tech.map((t) => (
+                    <span key={t} className="tech-badge">
+                      {t}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-border">
+                <div className="flex items-center gap-2">
+                  {selectedCaseStudy.repo && (
+                    <Button asChild size="sm" variant="outline">
+                      <a href={selectedCaseStudy.repo} target="_blank" rel="noreferrer">
+                        <Github className="h-4 w-4 mr-2" /> Inspect Code
+                      </a>
+                    </Button>
+                  )}
+                  {selectedCaseStudy.live && (
+                    <Button asChild size="sm">
+                      <a href={selectedCaseStudy.live} target="_blank" rel="noreferrer">
+                        <ExternalLink className="h-4 w-4 mr-2" /> Open Live Application
+                      </a>
+                    </Button>
+                  )}
+                </div>
+                <Button variant="ghost" size="sm" onClick={() => setSelectedCaseStudy(null)}>
+                  Close
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* 60-Second Tech Overview Modal */}
+      <Dialog open={videoOpen} onOpenChange={setVideoOpen}>
+        <DialogContent className="max-w-xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader className="text-left space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="case-study-badge">Executive Elevator Pitch</span>
+              <span className="text-xs font-mono text-primary uppercase tracking-wider">
+                60s Overview
+              </span>
+            </div>
+            <DialogTitle className="text-xl font-bold tracking-tight text-foreground">
+              Muhammad Usman Aziz — Tech Brief
+            </DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground">
+              Fast-track overview for international engineering leaders and technical recruiters.
+            </DialogDescription>
+          </DialogHeader>
+
+          {/* Video Mockup / Interactive Presentation Screen */}
+          <div className="video-player-mockup">
+            <div className="video-badge-pill">
+              <span className="live-dot" /> 60-Second Architecture Overview
+            </div>
+            <div className="video-center-art">
+              <PlayCircle className="h-14 w-14 text-primary opacity-90 transition-transform hover:scale-110 cursor-pointer" />
+            </div>
+            <div className="video-controls-bar">
+              <span className="font-mono text-2xs text-foreground/80">00:00 / 01:00</span>
+              <div className="video-scrubber">
+                <div className="video-scrubber-fill" />
+              </div>
+              <span className="font-mono text-2xs text-primary font-semibold">1080p HD</span>
+            </div>
+          </div>
+
+          {/* Transcript / Silicon Valley Pitch */}
+          <div className="pitch-transcript space-y-3 text-sm leading-relaxed border border-border p-4 rounded-xl bg-card">
+            <p className="font-medium text-foreground">
+              &ldquo;I architect intelligent systems at the intersection of Generative AI, enterprise ERPNext, and resilient offline-first mobile applications.&rdquo;
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs pt-2">
+              <div className="pitch-point">
+                <strong>🤖 Production GenAI:</strong> RAG with ChromaDB, parameter-efficient fine-tuning (LoRA), and clinical note reasoning.
+              </div>
+              <div className="pitch-point">
+                <strong>🏢 Enterprise ERP:</strong> Frappe/ERPNext developer at Agrovisions; 100% data fidelity ETL migrations &amp; HMAC QR verification.
+              </div>
+              <div className="pitch-point">
+                <strong>⚡ Offline-First Systems:</strong> Sub-15ms local queries with Dexie (IndexedDB), React 19, TanStack Start &amp; Capacitor.
+              </div>
+              <div className="pitch-point">
+                <strong>🌍 Global Readiness:</strong> FAST-NUCES CS graduate; fluent English; overlapping US/EU working hours.
+              </div>
+            </div>
+          </div>
+
+          {/* Action CTAs */}
+          <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-border">
+            <div className="flex items-center gap-2">
+              <Button asChild size="sm">
+                <a href="#contact" onClick={() => setVideoOpen(false)}>
+                  Book / Contact Directly <ArrowRight className="h-3.5 w-3.5 ml-1" />
+                </a>
+              </Button>
+              <Button asChild size="sm" variant="outline">
+                <a href="/Muhammad-Usman-Aziz-Resume.pdf" target="_blank" rel="noreferrer">
+                  <Download className="h-3.5 w-3.5 mr-1" /> Resume (PDF)
+                </a>
+              </Button>
+            </div>
+            <Button variant="ghost" size="sm" onClick={() => setVideoOpen(false)}>
+              Close
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
