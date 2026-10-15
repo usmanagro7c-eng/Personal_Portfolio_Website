@@ -46,6 +46,7 @@ import { AnimatedCount } from "@/components/animated-count";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { CommandPalette } from "@/components/command-palette";
 import { TerminalModal } from "@/components/terminal-modal";
+import { TechMarquee } from "@/components/tech-marquee";
 import {
   Dialog,
   DialogContent,
@@ -579,6 +580,8 @@ export function Portfolio() {
             <p className="stat-label">BS Computer Science alumnus</p>
           </div>
         </div>
+
+        <TechMarquee />
 
         <section id="projects" className="section site-container" data-reveal>
           <div className="section-top">
