@@ -1664,6 +1664,24 @@ a {
   .contact-layout {
     gap: 48px;
   }
+  .bento-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  .bento-card-profile,
+  .bento-card-enterprise {
+    grid-column: span 2;
+  }
+  .bento-card-clock,
+  .bento-card-radar,
+  .bento-card-edu,
+  .bento-card-mentor {
+    grid-column: span 1;
+  }
+  .bento-kpi-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
 }
 
 @media (max-width: 768px) {
@@ -1873,16 +1891,33 @@ a {
     height: 42px;
   }
   .bento-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr !important;
     gap: 16px;
   }
   .bento-card-profile,
+  .bento-card-clock,
+  .bento-card-radar,
+  .bento-card-edu,
+  .bento-card-mentor,
   .bento-card-enterprise {
-    grid-column: span 2;
+    grid-column: span 1 !important;
+  }
+  .bento-profile-inner {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 16px;
+  }
+  .bento-tags-row {
+    justify-content: center;
   }
   .bento-kpi-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
     gap: 10px;
+  }
+  .bento-enterprise-header {
+    flex-direction: column;
+    gap: 12px;
   }
 }
 
@@ -2271,10 +2306,39 @@ a {
   }
   .bento-tags-row {
     gap: 4px;
+    justify-content: center;
   }
   .bento-pill {
     font-size: 10px;
     padding: 2px 7px;
+  }
+  .bento-card {
+    padding: 14px 12px;
+  }
+  .bento-profile-name {
+    font-size: 1.25rem;
+  }
+  .bento-profile-bio {
+    font-size: var(--text-xs);
+  }
+  .bento-avatar-img {
+    width: 85px;
+    height: 85px;
+  }
+  .bento-clock-time {
+    font-size: 1.35rem;
+  }
+  .bento-stat-num {
+    font-size: 1.65rem;
+  }
+  .bento-kpi-value {
+    font-size: 1.35rem;
+  }
+  .bento-kpi-label {
+    font-size: var(--text-xs);
+  }
+  .bento-kpi-desc {
+    font-size: 11px;
   }
 }
 
