@@ -30,6 +30,13 @@ export interface CaseStudy {
   metrics: { label: string; value: string }[];
 }
 
+export interface CodeSnippet {
+  filename: string;
+  language: string;
+  summary: string;
+  code: string;
+}
+
 export interface Project {
   title: string;
   subtitle: string;
@@ -43,6 +50,7 @@ export interface Project {
   live?: string;
   featured?: boolean;
   caseStudy?: CaseStudy;
+  codeSnippet?: CodeSnippet;
 }
 
 export const projects: Project[] = [
@@ -74,6 +82,34 @@ export const projects: Project[] = [
         { label: 'Sync Data Loss', value: '0%' },
         { label: 'Cloud Infrastructure Cost', value: '$0 / mo' },
       ],
+    },
+    codeSnippet: {
+      filename: "sync-reconciliation-queue.ts",
+      language: "typescript",
+      summary: "Deterministic FIFO mutation queue handling offline-to-cloud synchronization with optimistic locking.",
+      code: `// Stockly Offline Sync Engine (Dexie + Google Sheets OAuth)
+export async function flushMutationQueue(db: StocklyDatabase, client: SheetsClient) {
+  const pending = await db.syncQueue.where('status').equals('pending').sortBy('timestamp');
+  if (!pending.length) return { processed: 0 };
+
+  for (const item of pending) {
+    try {
+      await db.syncQueue.update(item.id, { status: 'syncing' });
+      const response = await client.appendOrUpdate(item.range, item.payload);
+      
+      if (response.status === 200) {
+        await db.syncQueue.update(item.id, { status: 'synced', syncedAt: Date.now() });
+      }
+    } catch (err) {
+      await db.syncQueue.update(item.id, { 
+        status: 'retry', 
+        attempts: item.attempts + 1,
+        lastError: String(err) 
+      });
+      break; // Preserve FIFO sequence integrity
+    }
+  }
+}`,
     },
   },
   {
@@ -133,6 +169,30 @@ export const projects: Project[] = [
         { label: 'Retrieval Strategy', value: 'Hybrid Dense+BM25' },
       ],
     },
+    codeSnippet: {
+      filename: "hybrid-clinical-retriever.py",
+      language: "python",
+      summary: "BM25 keyword search combined with ChromaDB dense vector similarity to guarantee medical terminology precision.",
+      code: `from langchain.retrievers import EnsembleRetriever
+from langchain_community.retrievers import BM25Retriever
+from langchain_community.vectorstores import Chroma
+
+def build_hybrid_clinical_retriever(documents, embeddings_model):
+    # Sparse BM25 retriever for exact ICD-10 medical terminology
+    bm25 = BM25Retriever.from_documents(documents)
+    bm25.k = 3
+
+    # Dense semantic retriever for symptom descriptions & synonyms
+    chroma = Chroma.from_documents(documents, embeddings_model)
+    dense = chroma.as_retriever(search_kwargs={"k": 3})
+
+    # Weighted Ensemble (50% semantic, 50% keyword precision)
+    ensemble = EnsembleRetriever(
+        retrievers=[bm25, dense],
+        weights=[0.5, 0.5]
+    )
+    return ensemble`,
+    },
   },
   {
     title: 'Pseudocode → C++ Converter',
@@ -188,6 +248,26 @@ export const projects: Project[] = [
         { label: 'Processing Framerate', value: '25+ FPS' },
       ],
     },
+    codeSnippet: {
+      filename: "extract_keypoints.py",
+      language: "python",
+      summary: "Normalizing 543 3D skeletal landmarks from MediaPipe Holistic into a flattened feature vector for Bi-LSTM sequence inference.",
+      code: `import numpy as np
+
+def extract_keypoints(results):
+    # Normalized face coordinates (468 points * 3)
+    face = np.array([[res.x, res.y, res.z] for res in results.face_landmarks.landmark]).flatten() if results.face_landmarks else np.zeros(1404)
+    
+    # Body pose (33 points * 4 with visibility)
+    pose = np.array([[res.x, res.y, res.z, res.visibility] for res in results.pose_landmarks.landmark]).flatten() if results.pose_landmarks else np.zeros(132)
+    
+    # Left & right hand spatial tracking (21 points * 3 each)
+    lh = np.array([[res.x, res.y, res.z] for res in results.left_hand_landmarks.landmark]).flatten() if results.left_hand_landmarks else np.zeros(63)
+    rh = np.array([[res.x, res.y, res.z] for res in results.right_hand_landmarks.landmark]).flatten() if results.right_hand_landmarks else np.zeros(63)
+    
+    # Concatenate into single deterministic temporal vector (1,662 features)
+    return np.concatenate([pose, face, lh, rh])`,
+    },
   },
   {
     title: 'ERPNext Document Verification Portal',
@@ -216,6 +296,26 @@ export const projects: Project[] = [
         { label: 'Audit Speedup', value: '40%' },
         { label: 'Fraud Incidents', value: '0' },
       ],
+    },
+    codeSnippet: {
+      filename: "crypto_verification_hook.py",
+      language: "python",
+      summary: "HMAC-SHA256 commercial token generation and timestamp validation inside Frappe Document lifecycle.",
+      code: `import hmac
+import hashlib
+import frappe
+
+def generate_tamper_proof_token(doc, method):
+    """Frappe hook: Stamped on Sales Invoice submission"""
+    secret_key = frappe.conf.get("COMMERCIAL_VERIFY_SECRET").encode('utf-8')
+    
+    # Canonical payload preventing field tampering
+    payload = f"{doc.name}|{doc.customer}|{doc.grand_total}|{doc.creation}".encode('utf-8')
+    signature = hmac.new(secret_key, payload, hashlib.sha256).hexdigest()
+    
+    # Store token in DocType and generate high-density QR verification URL
+    doc.db_set("verification_hash", signature[:16].upper(), update_modified=False)
+    doc.db_set("qr_code_url", f"https://verify.agrovisions.com/check/{doc.name}?sig={signature[:16].upper()}", update_modified=False)`,
     },
   },
   {

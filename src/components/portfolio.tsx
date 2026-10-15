@@ -1320,6 +1320,42 @@ export function Portfolio() {
                   </h4>
                   <p className="text-muted-foreground">{selectedCaseStudy.caseStudy.outcome}</p>
                 </div>
+
+                {/* Interactive Code Architecture Deep-Dive */}
+                {selectedCaseStudy.codeSnippet && (
+                  <div className="case-section-card bg-[#0b0e14] border-[#1d2433] p-4 rounded-xl space-y-2">
+                    <div className="flex items-center justify-between border-b border-[#1f2638] pb-2">
+                      <div className="flex items-center gap-2">
+                        <Code2 className="h-4 w-4 text-primary" />
+                        <span className="font-mono text-xs font-semibold text-foreground">
+                          {selectedCaseStudy.codeSnippet.filename}
+                        </span>
+                        <span className="text-2xs font-mono uppercase px-1.5 py-0.5 rounded bg-primary/10 text-primary">
+                          {selectedCaseStudy.codeSnippet.language}
+                        </span>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 text-2xs font-mono gap-1 text-muted-foreground hover:text-foreground"
+                        onClick={() => {
+                          if (selectedCaseStudy.codeSnippet?.code) {
+                            navigator.clipboard.writeText(selectedCaseStudy.codeSnippet.code);
+                            toast.success("Code copied to clipboard!");
+                          }
+                        }}
+                      >
+                        <Copy className="h-3 w-3" /> Copy
+                      </Button>
+                    </div>
+                    <p className="text-2xs text-muted-foreground">
+                      {selectedCaseStudy.codeSnippet.summary}
+                    </p>
+                    <pre className="p-3 bg-[#07090e] rounded-lg border border-[#181d29] overflow-x-auto text-2xs font-mono text-emerald-400 leading-relaxed max-h-60">
+                      <code>{selectedCaseStudy.codeSnippet.code}</code>
+                    </pre>
+                  </div>
+                )}
               </div>
 
               {/* Tech Stack Pills */}
