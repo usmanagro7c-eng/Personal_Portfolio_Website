@@ -2179,25 +2179,105 @@ a {
     width: 44px;
     height: 44px;
   }
+
+  /* Bento mobile optimization */
+  .bento-card {
+    padding: 16px;
+    border-radius: var(--radius-lg);
+  }
+  .bento-avatar-img {
+    width: 100px;
+    height: 100px;
+  }
+  .bento-clock-time {
+    font-size: 1.5rem;
+  }
+  .bento-kpi-card {
+    padding: 14px;
+  }
+  .bento-kpi-value {
+    font-size: 1.5rem;
+  }
+  .bento-card-title {
+    font-size: var(--text-sm);
+  }
+
+  /* Modals & Dialogs on small screens */
+  .case-study-dialog,
+  .terminal-modal-content {
+    max-height: 90vh !important;
+    padding: 16px !important;
+  }
+  .case-metric-box {
+    padding: 10px 12px;
+  }
+  .case-metric-value {
+    font-size: 1.1rem;
+  }
+  .case-section-card {
+    padding: 12px;
+  }
+
+  /* Project title & actions wrap gracefully */
+  .project-title-row {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .project-actions {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .case-study-action-btn {
+    padding: 4px 8px;
+  }
 }
 
-@media (max-width: 360px) {
+@media (max-width: 380px) {
   .site-container {
-    width: calc(100% - 24px);
+    width: calc(100% - 20px);
+  }
+  .hero h1 {
+    font-size: 1.5rem;
+  }
+  .hero-intro {
+    font-size: var(--text-sm);
+  }
+  .hero-actions .hero-cta {
+    height: 42px;
+    font-size: var(--text-sm);
+    padding-inline: 14px;
+  }
+  .stats {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .stat {
+    border-right: none !important;
+    padding-left: 0 !important;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .stat:last-child {
+    border-bottom: none;
   }
   .talk-button {
     display: none;
-  }
-  .hero h1 {
-    font-size: 1.55rem;
   }
   .skill-grid {
     grid-template-columns: 1fr;
   }
   .profile-img {
-    height: 280px;
+    height: 260px;
+  }
+  .bento-tags-row {
+    gap: 4px;
+  }
+  .bento-pill {
+    font-size: 10px;
+    padding: 2px 7px;
   }
 }
+
 
 /* ------------------------------------------------------------------ *
  * Enhanced Components: Command Trigger, Search, Featured, Avatar, Edu, Testimonials, Blogs

@@ -377,8 +377,8 @@ export function TerminalModal({ open, onOpenChange }: TerminalModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className={`terminal-modal-content bg-[#0c0e14] text-[#d6deeb] border-[#1e2433] p-0 overflow-hidden shadow-2xl transition-all duration-200 ${
-          isMaximized ? "max-w-[95vw] h-[92vh]" : "max-w-2xl max-h-[80vh] h-[580px]"
+        className={`terminal-modal-content bg-[#0c0e14] text-[#d6deeb] border-[#1e2433] p-0 overflow-hidden shadow-2xl transition-all duration-200 w-[96vw] max-w-2xl ${
+          isMaximized ? "w-[98vw] max-w-[98vw] h-[92vh]" : "max-h-[85vh] h-[540px] sm:h-[580px]"
         }`}
       >
         <DialogTitle className="sr-only">Interactive Developer Terminal</DialogTitle>
