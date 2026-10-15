@@ -240,6 +240,48 @@ export function Portfolio() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [menuOpen]);
 
+  // High-performance spotlight cursor tracking for cards
+  useEffect(() => {
+    // Only track on fine pointer (desktop / mouse) to conserve mobile CPU
+    if (typeof window === "undefined" || !window.matchMedia("(pointer: fine)").matches) {
+      return;
+    }
+
+    let rafId = 0;
+    const onMouseMove = (e: MouseEvent) => {
+      if (rafId) return;
+      rafId = requestAnimationFrame(() => {
+        rafId = 0;
+        const cards = document.querySelectorAll<HTMLElement>(".spotlight-card");
+        const clientX = e.clientX;
+        const clientY = e.clientY;
+
+        for (let i = 0; i < cards.length; i++) {
+          const card = cards[i];
+          const rect = card.getBoundingClientRect();
+          // Only update if cursor is within 140px proximity to card to minimize paint overhead
+          if (
+            clientX >= rect.left - 140 &&
+            clientX <= rect.right + 140 &&
+            clientY >= rect.top - 140 &&
+            clientY <= rect.bottom + 140
+          ) {
+            const x = clientX - rect.left;
+            const y = clientY - rect.top;
+            card.style.setProperty("--mouse-x", `${x}px`);
+            card.style.setProperty("--mouse-y", `${y}px`);
+          }
+        }
+      });
+    };
+
+    window.addEventListener("mousemove", onMouseMove, { passive: true });
+    return () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      window.removeEventListener("mousemove", onMouseMove);
+    };
+  }, []);
+
   useScrollReveal([category, expanded, skillIndex, searchQuery, selectedTech]);
 
   const filtered = projects.filter((p) => {
@@ -584,7 +626,7 @@ export function Portfolio() {
             <div className="project-grid">
               {visible.map((project, index) => (
                 <article
-                  className={`project-card ${project.featured ? "featured-card" : ""}`}
+                  className={`project-card spotlight-card ${project.featured ? "featured-card" : ""}`}
                   key={project.title}
                   data-reveal
                   style={revealDelay(Math.min(index, 5) * 70)}
@@ -710,7 +752,7 @@ export function Portfolio() {
 
           <div className="bento-grid">
             {/* Card 1: Identity & Executive Bio (Spans 2 cols) */}
-            <div className="bento-card bento-card-profile" data-reveal style={revealDelay(40)}>
+            <div className="bento-card spotlight-card bento-card-profile" data-reveal style={revealDelay(40)}>
               <div className="bento-profile-inner">
                 <div className="bento-avatar-wrap">
                   <img
@@ -747,7 +789,7 @@ export function Portfolio() {
             </div>
 
             {/* Card 2: Live Timezone & Remote Availability Widget (Spans 1 col) */}
-            <div className="bento-card bento-card-clock" data-reveal style={revealDelay(80)}>
+            <div className="bento-card spotlight-card bento-card-clock" data-reveal style={revealDelay(80)}>
               <div className="bento-card-header">
                 <span className="bento-card-eyebrow">
                   <Clock className="h-3.5 w-3.5 text-primary" /> LIVE TIMEZONE
@@ -769,7 +811,7 @@ export function Portfolio() {
             </div>
 
             {/* Card 3: Active Radar / Current Focus (Spans 1 col) */}
-            <div className="bento-card bento-card-radar" data-reveal style={revealDelay(120)}>
+            <div className="bento-card spotlight-card bento-card-radar" data-reveal style={revealDelay(120)}>
               <div className="bento-card-header">
                 <span className="bento-card-eyebrow">
                   <Cpu className="h-3.5 w-3.5 text-primary" /> ACTIVE RADAR
@@ -791,7 +833,7 @@ export function Portfolio() {
             </div>
 
             {/* Card 4: Academic Foundation - FAST-NUCES (Spans 1 col) */}
-            <div className="bento-card bento-card-edu" data-reveal style={revealDelay(160)}>
+            <div className="bento-card spotlight-card bento-card-edu" data-reveal style={revealDelay(160)}>
               <div className="bento-card-header">
                 <span className="bento-card-eyebrow">
                   <GraduationCap className="h-3.5 w-3.5 text-primary" /> ALMA MATER
@@ -815,7 +857,7 @@ export function Portfolio() {
             </div>
 
             {/* Card 5: Mentorship & Community Leadership (Spans 1 col) */}
-            <div className="bento-card bento-card-mentor" data-reveal style={revealDelay(200)}>
+            <div className="bento-card spotlight-card bento-card-mentor" data-reveal style={revealDelay(200)}>
               <div className="bento-card-header">
                 <span className="bento-card-eyebrow">
                   <Users className="h-3.5 w-3.5 text-success" /> MENTORSHIP
@@ -834,7 +876,7 @@ export function Portfolio() {
             </div>
 
             {/* Card 6: Enterprise Production Impact at Agrovisions (Spans 3 cols full width) */}
-            <div className="bento-card bento-card-enterprise" data-reveal style={revealDelay(240)}>
+            <div className="bento-card spotlight-card bento-card-enterprise" data-reveal style={revealDelay(240)}>
               <div className="bento-enterprise-header">
                 <div>
                   <div className="bento-card-header">
@@ -1007,7 +1049,7 @@ export function Portfolio() {
           <h2 className="section-heading">What collaborators say.</h2>
           <div className="testimonials-grid">
             {testimonials.map((t, i) => (
-              <div className="testimonial-card" key={i} data-reveal style={revealDelay(i * 100)}>
+              <div className="testimonial-card spotlight-card" key={i} data-reveal style={revealDelay(i * 100)}>
                 <div className="quote-mark">&ldquo;</div>
                 <p className="testimonial-quote">{t.quote}</p>
                 <div className="testimonial-author">
@@ -1044,7 +1086,7 @@ export function Portfolio() {
                 href={blog.url}
                 target="_blank"
                 rel="noreferrer"
-                className="blog-card"
+                className="blog-card spotlight-card"
                 data-reveal
                 style={revealDelay(i * 80)}
               >
