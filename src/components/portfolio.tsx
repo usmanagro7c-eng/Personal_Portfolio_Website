@@ -1,5 +1,6 @@
 import { useEffect, useState, type CSSProperties } from "react";
 import {
+  Activity,
   ArrowDown,
   ArrowRight,
   ArrowUp,
@@ -12,6 +13,7 @@ import {
   Clock,
   Code2,
   Copy,
+  Cpu,
   Database,
   Download,
   ExternalLink,
@@ -32,6 +34,7 @@ import {
   Sparkles,
   Terminal,
   TrendingUp,
+  Users,
   Waves,
   X,
 } from "lucide-react";
@@ -131,6 +134,48 @@ function ProjectCover({ kind, label }: { kind: string; label: string }) {
         </>
       )}
       <span className="cover-label">{label}</span>
+    </div>
+  );
+}
+
+function LiveClockWidget() {
+  const [timeStr, setTimeStr] = useState("");
+  const [dateStr, setDateStr] = useState("");
+
+  useEffect(() => {
+    const update = () => {
+      const now = new Date();
+      setTimeStr(
+        new Intl.DateTimeFormat("en-US", {
+          timeZone: "Asia/Karachi",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: true,
+        }).format(now),
+      );
+      setDateStr(
+        new Intl.DateTimeFormat("en-US", {
+          timeZone: "Asia/Karachi",
+          weekday: "short",
+          month: "short",
+          day: "numeric",
+        }).format(now),
+      );
+    };
+    update();
+    const timer = setInterval(update, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <div className="bento-clock">
+      <div className="bento-clock-time">{timeStr || "11:15:00 AM"}</div>
+      <div className="bento-clock-meta">
+        <span>{dateStr || "Today"}</span>
+        <span className="bento-dot-sep">·</span>
+        <span>PKT (UTC+5)</span>
+      </div>
     </div>
   );
 }
@@ -653,59 +698,181 @@ export function Portfolio() {
         </section>
 
         <section id="about" className="section site-container" data-reveal>
-          <div className="about-layout">
-            <div className="about-visual">
-              <div className="eyebrow">Behind the code</div>
-              <h2 className="section-heading">
-                An engineer&rsquo;s mindset.
-                <br />A mentor&rsquo;s perspective.
-              </h2>
-              <div className="profile-frame" style={{ marginTop: "24px" }}>
-                <img
-                  src="/profile.jpeg"
-                  alt="Muhammad Usman Aziz"
-                  className="profile-img"
-                  width={340}
-                  height={380}
-                  loading="lazy"
-                />
-                <div className="profile-badge">
-                  <span className="profile-dot" />
-                  <div>
-                    <strong>Muhammad Usman Aziz</strong>
+          <div className="section-top">
+            <div>
+              <div className="eyebrow">Executive Overview</div>
+              <h2 className="section-heading">Engineering depth. Real-world execution.</h2>
+              <p className="section-subtitle">
+                An interactive high-resolution look into my technical foundation, production experience, and engineering philosophies.
+              </p>
+            </div>
+          </div>
+
+          <div className="bento-grid">
+            {/* Card 1: Identity & Executive Bio (Spans 2 cols) */}
+            <div className="bento-card bento-card-profile" data-reveal style={revealDelay(40)}>
+              <div className="bento-profile-inner">
+                <div className="bento-avatar-wrap">
+                  <img
+                    src="/profile.jpeg"
+                    alt="Muhammad Usman Aziz"
+                    className="bento-avatar-img"
+                    width={140}
+                    height={140}
+                    loading="lazy"
+                  />
+                  <div className="bento-avatar-status" title="Online & Available for Engineering Roles">
+                    <span className="bento-avatar-pulse" />
+                  </div>
+                </div>
+                <div className="bento-profile-text">
+                  <div className="bento-profile-badge">
+                    <Sparkles className="h-3 w-3 text-primary" />
                     <span>AI &amp; Enterprise Software Engineer</span>
+                  </div>
+                  <h3 className="bento-profile-name">Muhammad Usman Aziz</h3>
+                  <p className="bento-profile-bio">
+                    FAST-NUCES Computer Science alumnus specializing in <strong>production GenAI systems</strong>, <strong>custom ERPNext platforms</strong>, and <strong>offline-first applications</strong>. I turn complex architectural challenges into scalable, tamper-proof systems that power real business operations.
+                  </p>
+                  <div className="bento-tags-row">
+                    <span className="bento-pill">Python</span>
+                    <span className="bento-pill">TypeScript</span>
+                    <span className="bento-pill">React 19</span>
+                    <span className="bento-pill">Frappe / ERPNext</span>
+                    <span className="bento-pill">RAG &amp; LoRA</span>
+                    <span className="bento-pill">Dexie (IndexedDB)</span>
                   </div>
                 </div>
               </div>
             </div>
-            <div className="about-copy">
-              <p>
-                I&rsquo;m <strong>Muhammad Usman Aziz</strong>, a FAST-NUCES Computer Science
-                alumnus based in Faisalabad, Pakistan. I build thoughtful software that connects
-                cutting-edge AI with the practical needs of real businesses.
-              </p>
-              <p>
-                With <strong>1+ years of enterprise software experience at Agrovisions</strong> and{" "}
-                <strong>7+ years of technical instruction and mentorship</strong>, I bring both
-                production engineering depth and a passion for making complex ideas accessible.
-              </p>
-              <p>
-                My focus: production GenAI systems, custom ERPNext platforms, and offline-first
-                mobile applications that work wherever people do.
-              </p>
-              <div className="focus-list">
-                <span>
-                  <BrainCircuit />
-                  AI-driven thinking
+
+            {/* Card 2: Live Timezone & Remote Availability Widget (Spans 1 col) */}
+            <div className="bento-card bento-card-clock" data-reveal style={revealDelay(80)}>
+              <div className="bento-card-header">
+                <span className="bento-card-eyebrow">
+                  <Clock className="h-3.5 w-3.5 text-primary" /> LIVE TIMEZONE
                 </span>
-                <span>
-                  <BriefcaseBusiness />
-                  Enterprise impact
+                <span className="bento-live-badge">
+                  <span className="live-dot" /> LIVE
                 </span>
-                <span>
-                  <GraduationCap />
-                  Lifelong learning
+              </div>
+              <LiveClockWidget />
+              <div className="bento-clock-footer">
+                <div className="bento-status-line">
+                  <span className="bento-green-indicator" />
+                  <span>Faisalabad · Open to Remote &amp; Global</span>
+                </div>
+                <p className="bento-tz-note">
+                  Flexible working hours overlapping with <strong>US (EST/PST)</strong> &amp; <strong>EU (GMT)</strong>.
+                </p>
+              </div>
+            </div>
+
+            {/* Card 3: Active Radar / Current Focus (Spans 1 col) */}
+            <div className="bento-card bento-card-radar" data-reveal style={revealDelay(120)}>
+              <div className="bento-card-header">
+                <span className="bento-card-eyebrow">
+                  <Cpu className="h-3.5 w-3.5 text-primary" /> ACTIVE RADAR
                 </span>
+                <span className="bento-radar-badge">SHIPPING</span>
+              </div>
+              <h4 className="bento-card-title">What I&rsquo;m currently exploring &amp; engineering</h4>
+              <ul className="bento-radar-list">
+                <li>
+                  <strong>Agentic AI &amp; Tool Scaffolding:</strong> Autonomous workflow agents with strict schema-validated tool calling.
+                </li>
+                <li>
+                  <strong>Offline-First Resilience:</strong> Zero-latency optimistic client caching with IndexedDB &amp; SQLite edge sync.
+                </li>
+                <li>
+                  <strong>Cryptographic Ledgers:</strong> HMAC-SHA256 commercial verification inside Frappe.
+                </li>
+              </ul>
+            </div>
+
+            {/* Card 4: Academic Foundation - FAST-NUCES (Spans 1 col) */}
+            <div className="bento-card bento-card-edu" data-reveal style={revealDelay(160)}>
+              <div className="bento-card-header">
+                <span className="bento-card-eyebrow">
+                  <GraduationCap className="h-3.5 w-3.5 text-primary" /> ALMA MATER
+                </span>
+                <span className="bento-pill-accent">BS CS</span>
+              </div>
+              <h4 className="bento-card-title">FAST National University (FAST-NUCES)</h4>
+              <p className="bento-edu-meta">Faisalabad Campus · Computer Science Alumnus</p>
+              <div className="bento-edu-highlight">
+                <div className="bento-edu-badge">Distinction FYP</div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  <strong>Deaf-ED:</strong> Real-time Pakistani Sign Language recognition achieving 90%+ accuracy via MediaPipe &amp; Bi-LSTM.
+                </p>
+              </div>
+              <div className="bento-edu-courses">
+                <span>Distributed Systems</span>
+                <span>Machine Learning</span>
+                <span>Advanced DSA</span>
+                <span>OS</span>
+              </div>
+            </div>
+
+            {/* Card 5: Mentorship & Community Leadership (Spans 1 col) */}
+            <div className="bento-card bento-card-mentor" data-reveal style={revealDelay(200)}>
+              <div className="bento-card-header">
+                <span className="bento-card-eyebrow">
+                  <Users className="h-3.5 w-3.5 text-success" /> MENTORSHIP
+                </span>
+                <span className="bento-pill-accent">7+ YEARS</span>
+              </div>
+              <h4 className="bento-card-title">The Century Academy</h4>
+              <p className="bento-edu-meta">Lead STEM &amp; Computer Science Instructor</p>
+              <div className="bento-stat-highlight">
+                <div className="bento-stat-num">150+</div>
+                <div className="bento-stat-sub">Students mentored in CS &amp; Python with a 95%+ board pass rate.</div>
+              </div>
+              <p className="bento-quote">
+                &ldquo;Explaining complex architectural ideas simply is the ultimate proof of engineering depth.&rdquo;
+              </p>
+            </div>
+
+            {/* Card 6: Enterprise Production Impact at Agrovisions (Spans 3 cols full width) */}
+            <div className="bento-card bento-card-enterprise" data-reveal style={revealDelay(240)}>
+              <div className="bento-enterprise-header">
+                <div>
+                  <div className="bento-card-header">
+                    <span className="bento-card-eyebrow">
+                      <BriefcaseBusiness className="h-3.5 w-3.5 text-primary" /> ENTERPRISE PRODUCTION
+                    </span>
+                    <span className="bento-live-badge">AGROVISIONS · OCT 2025 — PRESENT</span>
+                  </div>
+                  <h4 className="bento-card-title text-lg">
+                    Full-Stack Software Engineer &amp; ERPNext Specialist
+                  </h4>
+                  <p className="text-sm text-muted-foreground mt-1 max-w-2xl">
+                    Spearheading core enterprise software customization, mission-critical financial ETL migrations, and cryptographic verification workflows for high-volume agricultural logistics.
+                  </p>
+                </div>
+                <Button asChild variant="outline" size="sm" className="hidden sm:inline-flex">
+                  <a href="#experience">
+                    View Full Experience <ArrowRight className="h-3.5 w-3.5 ml-1" />
+                  </a>
+                </Button>
+              </div>
+
+              <div className="bento-kpi-grid">
+                <div className="bento-kpi-card">
+                  <span className="bento-kpi-value">40%</span>
+                  <span className="bento-kpi-label">Sales &amp; Document Speedup</span>
+                  <p className="bento-kpi-desc">Automated invoicing and warehouse repacking flows inside Frappe.</p>
+                </div>
+                <div className="bento-kpi-card">
+                  <span className="bento-kpi-value">500+</span>
+                  <span className="bento-kpi-label">Shipments Secured</span>
+                  <p className="bento-kpi-desc">HMAC-SHA256 encrypted QR authentication eliminating physical paperwork tampering.</p>
+                </div>
+                <div className="bento-kpi-card">
+                  <span className="bento-kpi-value">100%</span>
+                  <span className="bento-kpi-label">Data Migration Fidelity</span>
+                  <p className="bento-kpi-desc">Migrated 5+ years of QuickBooks Desktop records into ERPNext with zero data loss.</p>
+                </div>
               </div>
             </div>
           </div>
